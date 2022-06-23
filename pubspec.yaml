@@ -1,0 +1,54 @@
+name: flutter_food_order
+description: Food Ordering App Built in Flutter
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.1 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  firebase_core: ^1.18.0
+  cloud_firestore: ^3.1.18
+  flutter_native_splash: ^2.2.3+1
+  provider: ^4.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.9.3
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - res/images/
+    - res/fonts/
+
+  fonts:
+    - family: Abel
+      fonts:
+        - asset: res/fonts/abel/Abel-Regular.ttf
+    - family: Sofia
+      fonts:
+        - asset: res/fonts/sofia/Sofia-Regular.otf
+        - asset: res/fonts/sofia/Sofia-Bold.ttf
+          weight: 600
+        - asset: res/fonts/sofia/Sofia-Light.otf
+          weight: 300
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "res/images/logo_ayomaem.png"
+
+flutter_native_splash:
+  color: "#FE724C"
+  image: res/images/logo_ayomaem.png
