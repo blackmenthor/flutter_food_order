@@ -47,7 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
       Positioned(
         top: 0.0,
         child: Image.asset(
-          AssetImages.bgOrangeTop,
+          Images.bgOrangeTop,
           width: context.width,
         ),
       );

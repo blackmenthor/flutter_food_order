@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       Positioned(
         top: 0.0,
         child: Image.asset(
-          AssetImages.bgOrangeTop,
+          Images.bgOrangeTop,
           width: context.width,
         ),
       );

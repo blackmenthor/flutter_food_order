@@ -11,7 +11,7 @@ class OnboardingPage extends StatelessWidget {
 
   Widget _buildBackground(BuildContext context) =>
     Image.asset(
-      AssetImages.bgHome,
+      Images.bgHome,
       height: context.height,
       width: context.width,
     );
