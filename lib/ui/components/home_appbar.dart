@@ -3,7 +3,12 @@ import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
 
 class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
-  const HomeAppBar({Key? key}) : super(key: key);
+  const HomeAppBar({
+    Key? key,
+    required this.scaffoldKey,
+  }) : super(key: key);
+
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,7 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
             children: [
               InkWell(
                 onTap: () {
-                  // TODO: OPEN DRAWER
+                  scaffoldKey.currentState?.openDrawer();
                 },
                 child: const Icon(
                   Icons.more_vert,

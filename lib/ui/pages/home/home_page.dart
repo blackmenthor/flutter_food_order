@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_food_order/ui/components/featured_restaurants_item.dart';
 import 'package:flutter_food_order/ui/components/food_category_item.dart';
 import 'package:flutter_food_order/ui/components/home_appbar.dart';
+import 'package:flutter_food_order/ui/pages/home/components/navigation_drawer.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   late TextEditingController _searchCtrl;
 
   @override
@@ -143,7 +145,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _featuredRestaurantsTitle(BuildContext context)
   => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,7 +223,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _popularItemsTitle(BuildContext context)
   => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -303,8 +305,8 @@ class _HomePageState extends State<HomePage> {
         _topTitle(context),
         const SizedBox(height: 16.0,),
         _searchBox(context),
-        const SizedBox(height: 16.0,),
-        _foodCategoryList(context),
+        // const SizedBox(height: 16.0,),
+        // _foodCategoryList(context),
         const SizedBox(height: 24.0,),
         _featuredRestaurantsTitle(context),
         const SizedBox(height: 8.0,),
@@ -319,7 +321,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const HomeAppBar(),
+      key: _scaffoldKey,
+      appBar: HomeAppBar(
+        scaffoldKey: _scaffoldKey,
+      ),
+      drawer: const NavigationDrawer(),
       body: _buildBody(context),
     );
   }
