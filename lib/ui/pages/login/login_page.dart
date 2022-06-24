@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
         child: MaterialButton(
           color: context.colors.surface,
           minWidth: 0.0,
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 4.0,
           ),
           shape: RoundedRectangleBorder(

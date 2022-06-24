@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_food_order/ui/components/menu_item_card.dart';
+import 'package:flutter_food_order/ui/pages/checkout/checkout_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
 
-class RestaurantDetailPage extends StatelessWidget {
+class RestaurantDetailPage extends StatefulWidget {
   const RestaurantDetailPage({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<RestaurantDetailPage> createState() => _RestaurantDetailPageState();
+}
+
+class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
+
   PreferredSizeWidget _buildAppBar(BuildContext context)
     => AppBar(
       leading: InkWell(
-        onTap: () => Navigator.pop(context),
+        onTap: () => context.pop(),
         child: const Icon(
           Icons.chevron_left,
           color: Colors.white,
@@ -192,9 +199,8 @@ class RestaurantDetailPage extends StatelessWidget {
       // TODO: CHECK CHECKOUT
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            // TODO: TO CHECKOUT PAGE
+            context.push(builder: (ctx) => const CheckoutPage());
           },
-
           icon: CircleAvatar(
             backgroundColor: Colors.white,
             child: Image.asset(

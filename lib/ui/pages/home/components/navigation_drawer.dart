@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_food_order/ui/pages/profile/profile_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
@@ -65,7 +66,7 @@ class NavigationDrawer extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  // TODO: ONTAP
+                  context.push(builder: (ctx) => const ProfilePage());
                 },
                 leading: Image.asset(
                   Images.icProfile,
