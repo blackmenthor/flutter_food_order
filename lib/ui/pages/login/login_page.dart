@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_food_order/core/models/auth_models.dart';
+import 'package:flutter_food_order/ui/pages/home/home_page.dart';
 import 'package:flutter_food_order/ui/pages/sign_up/sign_up_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({
@@ -15,9 +18,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  late TextEditingController _fullNameCtrl;
   late TextEditingController _emailCtrl;
-  late TextEditingController _phoneCtrl;
   late TextEditingController _passwordCtrl;
 
   var _passwordShown = false;
@@ -26,17 +27,13 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
-    _fullNameCtrl = TextEditingController();
     _emailCtrl = TextEditingController();
-    _phoneCtrl = TextEditingController();
     _passwordCtrl = TextEditingController();
   }
 
   @override
   void dispose() {
-    _fullNameCtrl.dispose();
     _emailCtrl.dispose();
-    _phoneCtrl.dispose();
     _passwordCtrl.dispose();
 
     super.dispose();
@@ -74,6 +71,26 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
 
+  Future<void> _login(BuildContext context) async {
+    final email = _emailCtrl.text;
+    final password = _passwordCtrl.text;
+    final authModel = context.read<AuthModel>();
+
+    if (email.isEmpty || password.isEmpty) {
+      context.showErrorSnackbar(text: 'You need to complete all fields!');
+      return;
+    }
+
+    try {
+      context.showLoadingDialog();
+      await authModel.login(email: email, password: password);
+    } catch (ex) {
+      context.showErrorSnackbar(text: ex.toString());
+    } finally {
+      context.pop();
+    }
+  }
+
   Widget _textWidget(BuildContext context) =>
       Container(
         width: context.width,
@@ -89,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 24.0,),
             TextField(
+              controller: _emailCtrl,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
@@ -103,12 +121,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 labelText: 'Email',
-                hintText: 'Email or phone',
+                hintText: 'Email',
               ),
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16.0,),
             TextField(
+              controller: _passwordCtrl,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
@@ -157,8 +176,8 @@ class _LoginPageState extends State<LoginPage> {
                       color: context.colors.surface,
                     ),
                   ),
-                  onPressed: () {
-
+                  onPressed: () async {
+                    _login(context);
                   },
               ),
             ),

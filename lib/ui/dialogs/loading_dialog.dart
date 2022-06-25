@@ -1,14 +1,5 @@
 import 'package:flutter/material.dart';
 
-void showLoadingDialog({
-  required BuildContext context,
-}) {
-  showDialog(
-      context: context,
-      builder: (ctx) => const LoadingDialog(),
-  );
-}
-
 class LoadingDialog extends StatelessWidget {
   const LoadingDialog({Key? key}) : super(key: key);
 

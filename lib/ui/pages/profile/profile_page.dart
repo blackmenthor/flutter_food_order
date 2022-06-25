@@ -1,13 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_food_order/core/models/auth_models.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
+import 'package:provider/provider.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+
+  late TextEditingController _emailCtrl;
+  late TextEditingController _nameCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _emailCtrl = TextEditingController();
+    _nameCtrl = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final authModel = context.read<AuthModel>();
+      final user = authModel.user;
+
+      _emailCtrl.text = user?.email ?? '';
+      _nameCtrl.text = user?.name ?? '';
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _nameCtrl.dispose();
+
+    super.dispose();
+  }
 
   Widget _backBtn(BuildContext context)
   => InkWell(
@@ -37,6 +71,8 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authModel = context.watch<AuthModel>();
+    final user = authModel.user;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -101,7 +137,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                     const SizedBox(height: 16.0,),
                   Text(
-                    'Angga Dwi',
+                    user?.name ?? '-',
                     style: context.textTheme.bodyLarge?.copyWith(
                       fontSize: 22.0,
                     ),
@@ -120,6 +156,7 @@ class ProfilePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
+                      controller: _nameCtrl,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -145,6 +182,7 @@ class ProfilePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
+                      controller: _emailCtrl,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -167,31 +205,6 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(
                     height: 16.0,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: const BorderSide(
-                              color: ThemeColors.textColor,
-                            )
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide(
-                            color: context.colors.primary,
-                          ),
-                        ),
-                        labelText: 'Phone number',
-                        hintText: 'Phone number',
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-                      ],
-                      keyboardType: TextInputType.phone,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -204,7 +217,20 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: FloatingActionButton.extended(
           onPressed: () async {
-            // TODO: Save Profile
+            context.showLoadingDialog();
+            final authModel = context.read<AuthModel>();
+
+            try {
+              await authModel.setUserProfile(
+                name: _nameCtrl.text,
+                email: _emailCtrl.text,
+              );
+              context.pop();
+              context.showMessageSnackbar(text: 'Profile saved!');
+            } catch (ex) {
+              context.pop();
+              context.showErrorSnackbar(text: ex.toString());
+            }
           },
           backgroundColor: context.colors.primary,
           label: Text(

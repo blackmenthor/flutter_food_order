@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_food_order/core/controller/kickoff_controller.dart';
 import 'package:flutter_food_order/core/dependency_injection/injector.dart';
-import 'package:flutter_food_order/ui/dialogs/loading_dialog.dart';
 import 'package:flutter_food_order/ui/pages/onboarding/onboarding_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/theme/text_theme.dart';

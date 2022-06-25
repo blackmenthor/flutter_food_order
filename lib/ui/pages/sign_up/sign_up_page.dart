@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_food_order/core/models/auth_models.dart';
+import 'package:flutter_food_order/ui/pages/home/home_page.dart';
 import 'package:flutter_food_order/ui/pages/login/login_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({
@@ -18,7 +21,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   late TextEditingController _fullNameCtrl;
   late TextEditingController _emailCtrl;
-  late TextEditingController _phoneCtrl;
   late TextEditingController _passwordCtrl;
 
   var _passwordShown = false;
@@ -29,7 +31,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
     _fullNameCtrl = TextEditingController();
     _emailCtrl = TextEditingController();
-    _phoneCtrl = TextEditingController();
     _passwordCtrl = TextEditingController();
   }
 
@@ -37,7 +38,6 @@ class _SignUpPageState extends State<SignUpPage> {
   void dispose() {
     _fullNameCtrl.dispose();
     _emailCtrl.dispose();
-    _phoneCtrl.dispose();
     _passwordCtrl.dispose();
 
     super.dispose();
@@ -67,6 +67,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             const SizedBox(height: 24.0,),
             TextField(
+              controller: _fullNameCtrl,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
@@ -87,6 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             const SizedBox(height: 16.0,),
             TextField(
+              controller: _emailCtrl,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
@@ -107,29 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             const SizedBox(height: 16.0,),
             TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                    borderSide: const BorderSide(
-                      color: ThemeColors.textColor,
-                    )
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide(
-                    color: context.colors.primary,
-                  ),
-                ),
-                labelText: 'Phone',
-                hintText: 'Phone',
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-              ],
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 16.0,),
-            TextField(
+              controller: _passwordCtrl,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
@@ -179,7 +159,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   onPressed: () {
-
+                    _register(context);
                   },
               ),
             ),
@@ -210,6 +190,34 @@ class _SignUpPageState extends State<SignUpPage> {
           ],
         ),
       );
+
+  Future<void> _register(BuildContext context) async {
+    final email = _emailCtrl.text;
+    final name = _fullNameCtrl.text;
+    final password = _passwordCtrl.text;
+    final authModel = context.read<AuthModel>();
+
+    if (email.isEmpty || name.isEmpty || password.isEmpty) {
+      context.showErrorSnackbar(text: 'You need to complete all fields!');
+      return;
+    }
+
+    try {
+      context.showLoadingDialog();
+      await authModel.register(
+          email: email,
+          name: name,
+          password: password,
+      );
+      context.pushAndReplace(builder: (ctx) => HomePage());
+      context.showMessageSnackbar(
+          text: 'Registration successful!',
+      );
+    } catch (ex) {
+      context.pop();
+      context.showErrorSnackbar(text: ex.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

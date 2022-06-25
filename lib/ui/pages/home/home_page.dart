@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_food_order/core/models/auth_models.dart';
+import 'package:flutter_food_order/core/models/location_model.dart';
+import 'package:flutter_food_order/core/models/restaurant_model.dart';
 import 'package:flutter_food_order/ui/components/featured_restaurants_item.dart';
-import 'package:flutter_food_order/ui/components/food_category_item.dart';
 import 'package:flutter_food_order/ui/components/home_appbar.dart';
 import 'package:flutter_food_order/ui/pages/home/components/navigation_drawer.dart';
+import 'package:flutter_food_order/ui/pages/login/login_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -25,8 +29,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    // TODO: ON CHANGED
     _searchCtrl = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final locationModel = context.read<LocationModel>();
+      locationModel.determinePosition();
+    });
   }
 
   @override
@@ -102,47 +110,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-  Widget _foodCategoryList(BuildContext context)
-    => SizedBox(
-      height: 95.0,
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0,),
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        children: [
-          FoodCategoryItem(
-              text: 'Burger',
-              imageRef: Images.icAngga,
-              enabled: true,
-          ),
-          FoodCategoryItem(
-            text: 'Donat',
-            imageRef: Images.icAngga,
-          ),
-          FoodCategoryItem(
-            text: 'Pizza',
-            imageRef: Images.icAngga,
-          ),
-          FoodCategoryItem(
-            text: 'Mexican',
-            imageRef: Images.icAngga,
-          ),
-          FoodCategoryItem(
-            text: 'Asian',
-            imageRef: Images.icAngga,
-          ),
-          FoodCategoryItem(
-            text: 'European',
-            imageRef: Images.icAngga,
-          ),
-          FoodCategoryItem(
-            text: 'Latino',
-            imageRef: Images.icAngga,
-          ),
-        ],
-      ),
-    );
-
   Widget _featuredRestaurantsTitle(BuildContext context)
   => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -171,55 +138,47 @@ class _HomePageState extends State<HomePage> {
     ),
   );
 
-  Widget _featuredRestaurants(BuildContext context)
-    => SizedBox(
+  Widget _featuredRestaurants(BuildContext context) {
+    final restaurantsModel = context.watch<RestaurantModel>();
+    if (!restaurantsModel.hasData) {
+      return const Center(
+          child: SizedBox(
+            height: 32.0,
+            width: 32.0,
+            child: CircularProgressIndicator(),
+          ),
+      );
+    }
+
+    final restaurants = restaurantsModel.restaurants;
+    if (restaurants?.isEmpty ?? true) {
+      return const Center(
+        child: Text(
+          'Empty Data...',
+        ),
+      );
+    }
+
+    return SizedBox(
       height: 235.0,
       child: ListView(
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         scrollDirection: Axis.horizontal,
-        children: [
-          // TODO: DATA
-          FeaturedRestaurantsItem(
-              text: 'McDonalds',
-              image: Images.taco,
-              rating: 4.5,
-              ratingCount: 40,
-              deliveryEstimation: "10-15 mins",
-              categories: const ['Burger','Chicken', 'Fast Food'],
-              deliveryCost: 0,
+        children: restaurants?.map((restaurant)
+          => FeaturedRestaurantsItem(
+              text: restaurant.name,
+              image: restaurant.image,
+              rating: restaurant.rating,
+              ratingCount: restaurant.ratingCount,
+              deliveryEstimation: restaurant.timeEstimation,
+              categories: restaurant.category,
+              deliveryCost: restaurant.isFreeDelivery ? 0 : 0,
               isWishlisted: true,
-          ),
-          FeaturedRestaurantsItem(
-            text: 'McDonalds',
-            image: Images.taco,
-            rating: 4.5,
-            ratingCount: 40,
-            deliveryEstimation: "10-15 mins",
-            categories: const ['Burger','Chicken', 'Fast Food'],
-            deliveryCost: 0,
-          ),
-          FeaturedRestaurantsItem(
-            text: 'McDonalds',
-            image: Images.taco,
-            rating: 4.5,
-            ratingCount: 40,
-            deliveryEstimation: "10-15 mins",
-            categories: const ['Burger','Chicken', 'Fast Food'],
-            deliveryCost: 0,
-          ),
-          FeaturedRestaurantsItem(
-            text: 'McDonalds',
-            image: Images.taco,
-            rating: 4.5,
-            ratingCount: 40,
-            deliveryEstimation: "10-15 mins",
-            categories: const ['Burger','Chicken', 'Fast Food'],
-            deliveryCost: 0,
-          ),
-        ],
+            ))?.toList() ?? [],
       ),
     );
+  }
 
   Widget _popularItemsTitle(BuildContext context)
   => Padding(
@@ -249,54 +208,47 @@ class _HomePageState extends State<HomePage> {
     ),
   );
 
-  Widget _popularItems(BuildContext context)
-  => SizedBox(
-    height: 235.0,
-    child: ListView(
-      shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      scrollDirection: Axis.horizontal,
-      children: [
-        // TODO: DATA
-        FeaturedRestaurantsItem(
-          text: 'McDonalds',
-          image: Images.taco,
-          rating: 4.5,
-          ratingCount: 40,
-          deliveryEstimation: "10-15 mins",
-          categories: const ['Burger','Chicken', 'Fast Food'],
-          deliveryCost: 0,
+  Widget _popularItems(BuildContext context) {
+    final restaurantsModel = context.watch<RestaurantModel>();
+    if (!restaurantsModel.hasData) {
+      return const Center(
+        child: SizedBox(
+          height: 32.0,
+          width: 32.0,
+          child: CircularProgressIndicator(),
         ),
-        FeaturedRestaurantsItem(
-          text: 'McDonalds',
-          image: Images.taco,
-          rating: 4.5,
-          ratingCount: 40,
-          deliveryEstimation: "10-15 mins",
-          categories: const ['Burger','Chicken', 'Fast Food'],
-          deliveryCost: 0,
+      );
+    }
+
+    final restaurants = restaurantsModel.restaurants;
+    if (restaurants?.isEmpty ?? true) {
+      return const Center(
+        child: Text(
+          'Empty Data...',
         ),
-        FeaturedRestaurantsItem(
-          text: 'McDonalds',
-          image: Images.taco,
-          rating: 4.5,
-          ratingCount: 40,
-          deliveryEstimation: "10-15 mins",
-          categories: const ['Burger','Chicken', 'Fast Food'],
-          deliveryCost: 0,
-        ),
-        FeaturedRestaurantsItem(
-          text: 'McDonalds',
-          image: Images.taco,
-          rating: 4.5,
-          ratingCount: 40,
-          deliveryEstimation: "10-15 mins",
-          categories: const ['Burger','Chicken', 'Fast Food'],
-          deliveryCost: 0,
-        ),
-      ],
-    ),
-  );
+      );
+    }
+
+    return SizedBox(
+      height: 235.0,
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        scrollDirection: Axis.horizontal,
+        children: restaurants?.map((restaurant)
+        => FeaturedRestaurantsItem(
+          text: restaurant.name,
+          image: restaurant.image,
+          rating: restaurant.rating,
+          ratingCount: restaurant.ratingCount,
+          deliveryEstimation: restaurant.timeEstimation,
+          categories: restaurant.category,
+          deliveryCost: restaurant.isFreeDelivery ? 0 : 0,
+          isWishlisted: true,
+        ))?.toList() ?? [],
+      ),
+    );
+  }
 
   Widget _buildBody(BuildContext context)
     => ListView(
@@ -320,6 +272,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!context.watch<AuthModel>().isLoggedIn) {
+      return const LoginPage();
+    }
     return Scaffold(
       key: _scaffoldKey,
       appBar: HomeAppBar(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_food_order/core/controller/shared_preferences_controller.dart';
 import 'package:flutter_food_order/core/dependency_injection/injector.dart';
-import 'package:flutter_food_order/ui/dialogs/loading_dialog.dart';
 import 'package:flutter_food_order/ui/pages/home/home_page.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 
@@ -17,8 +16,9 @@ class KickOffController {
   }
 
   Future<void> kickOff(BuildContext context) async {
-    showLoadingDialog(context: context);
+    context.showLoadingDialog();
     final onboardingShown = await _checkIfOnboardingIsShown();
+    context.pop();
     if (onboardingShown) {
       // if on boarding is already is shown, we should redirect user directly
       // to home page instead of showing them the login/register page

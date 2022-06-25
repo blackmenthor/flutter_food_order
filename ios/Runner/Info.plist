@@ -16,6 +16,8 @@
 		<string>flutter_food_order</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+        <string>Get your location when app is in use</string>
 		<key>CFBundleShortVersionString</key>
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>

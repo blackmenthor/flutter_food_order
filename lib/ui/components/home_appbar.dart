@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_food_order/core/models/location_model.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
+import 'package:provider/provider.dart';
 
 class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
-  const HomeAppBar({
+  HomeAppBar({
     Key? key,
     required this.scaffoldKey,
   }) : super(key: key);
 
   final GlobalKey<ScaffoldState> scaffoldKey;
+
+  bool hasLocation(BuildContext context)
+  => context.watch<LocationModel>().currentPosition != null;
+
+  String locationStr(BuildContext context) {
+    final locationModel = context.watch<LocationModel>();
+    final lat = locationModel.currentPosition?.latitude ?? '-';
+    final lng = locationModel.currentPosition?.longitude ?? '-';
+    return '$lat,$lng';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +71,14 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
                           textAlign: TextAlign.center,
                           style: context.textTheme.bodySmall,
                         ),
-                        // TODO: DATA
-                        Text(
-                          'Jakarta Timur',
+                        !hasLocation(context)
+                            ? const SizedBox(
+                          height: 14.0,
+                          width: 14.0,
+                          child: CircularProgressIndicator(),
+                        )
+                            : Text(
+                          locationStr(context),
                           style: context.textTheme.bodyMedium?.primary,
                           textAlign: TextAlign.center,
                         ),
