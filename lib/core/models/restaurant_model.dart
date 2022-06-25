@@ -21,6 +21,7 @@ class RestaurantModel extends ChangeNotifier {
         uid: snapshot.id,
         name: snapshot.data()['name'],
         description: snapshot.data()['description'],
+        location: snapshot.data()['location'],
         rating: snapshot.data()['rating'],
         ratingCount: snapshot.data()['rating'],
         category: snapshot.data()['category'],

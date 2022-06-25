@@ -87,7 +87,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         ),
         const SizedBox(width: 8.0,),
         Text(
-          'Jakarta Timur',
+          widget.restaurant.location ?? '-',
           style: context.textTheme.bodyMedium,
         ),
       ],

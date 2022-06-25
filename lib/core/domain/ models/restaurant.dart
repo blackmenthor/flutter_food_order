@@ -8,6 +8,7 @@ class Restaurant {
     required this.uid,
     this.name,
     this.description,
+    this.location,
     this.image,
     this.rating,
     this.ratingCount,
@@ -20,6 +21,7 @@ class Restaurant {
   final String uid;
   final String? name;
   final String? description;
+  final String? location;
   final String? image;
   final double? rating;
   final double? ratingCount;
