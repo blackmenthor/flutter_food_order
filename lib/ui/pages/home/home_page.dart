@@ -123,17 +123,17 @@ class _HomePageState extends State<HomePage> {
             fontSize: 20.0,
           ),
         ),
-        const Spacer(),
-        Text(
-          'View All',
-          style: context.textTheme.bodySmall?.primary,
-        ),
-        const SizedBox(width: 4.0,),
-        Icon(
-          Icons.chevron_right,
-          size: 16.0,
-          color: context.colors.primary,
-        )
+        // const Spacer(),
+        // Text(
+        //   'View All',
+        //   style: context.textTheme.bodySmall?.primary,
+        // ),
+        // const SizedBox(width: 4.0,),
+        // Icon(
+        //   Icons.chevron_right,
+        //   size: 16.0,
+        //   color: context.colors.primary,
+        // )
       ],
     ),
   );
@@ -167,14 +167,7 @@ class _HomePageState extends State<HomePage> {
         scrollDirection: Axis.horizontal,
         children: restaurants?.map((restaurant)
           => FeaturedRestaurantsItem(
-              text: restaurant.name,
-              image: restaurant.image,
-              rating: restaurant.rating,
-              ratingCount: restaurant.ratingCount,
-              deliveryEstimation: restaurant.timeEstimation,
-              categories: restaurant.category,
-              deliveryCost: restaurant.isFreeDelivery ? 0 : 0,
-              isWishlisted: true,
+              restaurant: restaurant,
             ))?.toList() ?? [],
       ),
     );
@@ -193,17 +186,17 @@ class _HomePageState extends State<HomePage> {
             fontSize: 20.0,
           ),
         ),
-        const Spacer(),
-        Text(
-          'View All',
-          style: context.textTheme.bodySmall?.primary,
-        ),
-        const SizedBox(width: 4.0,),
-        Icon(
-          Icons.chevron_right,
-          size: 16.0,
-          color: context.colors.primary,
-        )
+        // const Spacer(),
+        // Text(
+        //   'View All',
+        //   style: context.textTheme.bodySmall?.primary,
+        // ),
+        // const SizedBox(width: 4.0,),
+        // Icon(
+        //   Icons.chevron_right,
+        //   size: 16.0,
+        //   color: context.colors.primary,
+        // )
       ],
     ),
   );
@@ -235,16 +228,9 @@ class _HomePageState extends State<HomePage> {
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         scrollDirection: Axis.horizontal,
-        children: restaurants?.map((restaurant)
+        children: restaurants?.where((e) => e.isFavorite)?.map((restaurant)
         => FeaturedRestaurantsItem(
-          text: restaurant.name,
-          image: restaurant.image,
-          rating: restaurant.rating,
-          ratingCount: restaurant.ratingCount,
-          deliveryEstimation: restaurant.timeEstimation,
-          categories: restaurant.category,
-          deliveryCost: restaurant.isFreeDelivery ? 0 : 0,
-          isWishlisted: true,
+          restaurant: restaurant,
         ))?.toList() ?? [],
       ),
     );

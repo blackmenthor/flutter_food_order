@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_food_order/core/domain/%20models/restaurant.dart';
 import 'package:flutter_food_order/ui/components/menu_item_card.dart';
 import 'package:flutter_food_order/ui/pages/checkout/checkout_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
@@ -8,7 +10,10 @@ import 'package:flutter_food_order/ui/utils/images.dart';
 class RestaurantDetailPage extends StatefulWidget {
   const RestaurantDetailPage({
     Key? key,
+    required this.restaurant,
   }) : super(key: key);
+
+  final Restaurant restaurant;
 
   @override
   State<RestaurantDetailPage> createState() => _RestaurantDetailPageState();
@@ -25,8 +30,8 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
           color: Colors.white,
         ),
       ),
-      title: const Text(
-        'McDonald\'s',
+      title: Text(
+        widget.restaurant.name ?? '-',
       ),
       titleTextStyle: context.textTheme.bodyMedium?.copyWith(
         color: Colors.white,
@@ -37,15 +42,15 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   Widget _topImage(BuildContext context)
     => ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
-      child: Image.asset(
-        Images.taco,
+      child: CachedNetworkImage(
+        imageUrl: widget.restaurant.image!,
         width: double.infinity,
       ),
     );
 
   Widget _descriptionWidget(BuildContext context)
     => Text(
-      'Lorem Ipsum Dolor Sit Amet',
+      widget.restaurant.description ?? '-',
       style: context.textTheme.bodyMedium?.copyWith(
         color: ThemeColors.greyColor,
       ),
@@ -63,12 +68,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         ),
         const SizedBox(width: 8.0,),
         Text(
-          '4.5',
+          widget.restaurant.rating?.toString() ?? '-',
           style: context.textTheme.bodyMedium,
         ),
         const SizedBox(width: 4.0,),
         Text(
-          '(25+)',
+          '(${widget.restaurant.ratingCount})',
           style: context.textTheme.bodyMedium?.copyWith(
               color: ThemeColors.greyColor
           ),

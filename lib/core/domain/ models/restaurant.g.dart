@@ -9,7 +9,11 @@ part of 'restaurant.dart';
 abstract class _$RestaurantCWProxy {
   Restaurant category(List<dynamic>? category);
 
+  Restaurant description(String? description);
+
   Restaurant image(String? image);
+
+  Restaurant isFavorite(bool isFavorite);
 
   Restaurant isFreeDelivery(bool isFreeDelivery);
 
@@ -17,7 +21,7 @@ abstract class _$RestaurantCWProxy {
 
   Restaurant rating(double? rating);
 
-  Restaurant ratingCount(int? ratingCount);
+  Restaurant ratingCount(double? ratingCount);
 
   Restaurant timeEstimation(String? timeEstimation);
 
@@ -30,12 +34,14 @@ abstract class _$RestaurantCWProxy {
   /// Restaurant(...).copyWith(id: 12, name: "My name")
   /// ````
   Restaurant call({
-    List<String>? category,
+    List<dynamic>? category,
+    String? description,
     String? image,
+    bool? isFavorite,
     bool? isFreeDelivery,
     String? name,
     double? rating,
-    int? ratingCount,
+    double? ratingCount,
     String? timeEstimation,
     String? uid,
   });
@@ -51,7 +57,13 @@ class _$RestaurantCWProxyImpl implements _$RestaurantCWProxy {
   Restaurant category(List<dynamic>? category) => this(category: category);
 
   @override
+  Restaurant description(String? description) => this(description: description);
+
+  @override
   Restaurant image(String? image) => this(image: image);
+
+  @override
+  Restaurant isFavorite(bool isFavorite) => this(isFavorite: isFavorite);
 
   @override
   Restaurant isFreeDelivery(bool isFreeDelivery) =>
@@ -64,7 +76,7 @@ class _$RestaurantCWProxyImpl implements _$RestaurantCWProxy {
   Restaurant rating(double? rating) => this(rating: rating);
 
   @override
-  Restaurant ratingCount(int? ratingCount) => this(ratingCount: ratingCount);
+  Restaurant ratingCount(double? ratingCount) => this(ratingCount: ratingCount);
 
   @override
   Restaurant timeEstimation(String? timeEstimation) =>
@@ -83,7 +95,9 @@ class _$RestaurantCWProxyImpl implements _$RestaurantCWProxy {
   /// ````
   Restaurant call({
     Object? category = const $CopyWithPlaceholder(),
+    Object? description = const $CopyWithPlaceholder(),
     Object? image = const $CopyWithPlaceholder(),
+    Object? isFavorite = const $CopyWithPlaceholder(),
     Object? isFreeDelivery = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
     Object? rating = const $CopyWithPlaceholder(),
@@ -95,11 +109,20 @@ class _$RestaurantCWProxyImpl implements _$RestaurantCWProxy {
       category: category == const $CopyWithPlaceholder()
           ? _value.category
           // ignore: cast_nullable_to_non_nullable
-          : category as List<String>?,
+          : category as List<dynamic>?,
+      description: description == const $CopyWithPlaceholder()
+          ? _value.description
+          // ignore: cast_nullable_to_non_nullable
+          : description as String?,
       image: image == const $CopyWithPlaceholder()
           ? _value.image
           // ignore: cast_nullable_to_non_nullable
           : image as String?,
+      isFavorite:
+          isFavorite == const $CopyWithPlaceholder() || isFavorite == null
+              ? _value.isFavorite
+              // ignore: cast_nullable_to_non_nullable
+              : isFavorite as bool,
       isFreeDelivery: isFreeDelivery == const $CopyWithPlaceholder() ||
               isFreeDelivery == null
           ? _value.isFreeDelivery

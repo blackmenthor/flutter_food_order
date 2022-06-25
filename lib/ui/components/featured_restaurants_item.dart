@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_food_order/core/domain/%20models/restaurant.dart';
 import 'package:flutter_food_order/ui/pages/restaurant_detail/restaurant_detail_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
@@ -8,30 +9,18 @@ import 'package:flutter_food_order/ui/utils/images.dart';
 class FeaturedRestaurantsItem extends StatelessWidget {
   const FeaturedRestaurantsItem({
     Key? key,
-    required this.text,
-    required this.image,
-    required this.rating,
-    required this.ratingCount,
-    required this.deliveryEstimation,
-    required this.categories,
-    required this.deliveryCost,
-    this.isWishlisted = false,
+    required this.restaurant,
   }) : super(key: key);
 
-  final String? text;
-  final String? image;
-  final double? rating;
-  final double? ratingCount;
-  final String? deliveryEstimation;
-  final List<dynamic>? categories;
-  final double? deliveryCost;
-  final bool isWishlisted;
+  final Restaurant restaurant;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.push(builder: (ctx) => const RestaurantDetailPage());
+        context.push(builder: (ctx) => RestaurantDetailPage(
+          restaurant: restaurant,
+        ));
       },
       child: Container(
         margin: const EdgeInsets.only(right: 16.0),
@@ -50,9 +39,9 @@ class FeaturedRestaurantsItem extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  if (image != null) ...[
+                  if (restaurant.image != null) ...[
                     CachedNetworkImage(
-                        imageUrl: image!,
+                        imageUrl: restaurant.image!,
                         width: context.width * 0.75,
                         height: 150.0,
                     ),
@@ -65,13 +54,13 @@ class FeaturedRestaurantsItem extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            rating?.toStringAsFixed(1) ?? '0.0',
+                            restaurant.rating?.toStringAsFixed(1) ?? '0.0',
                             style: context.textTheme.bodySmall,
                           ),
                           const SizedBox(width: 8.0,),
@@ -82,7 +71,7 @@ class FeaturedRestaurantsItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 8.0,),
                           Text(
-                            '(${ratingCount?.toString() ?? '0'})',
+                            '(${restaurant.ratingCount?.toString() ?? '0'})',
                             style: context.textTheme.bodySmall?.copyWith(
                               color: ThemeColors.greyColor,
                             ),
@@ -91,7 +80,8 @@ class FeaturedRestaurantsItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (isWishlisted) ...[
+                  // TODO: WISHLIST
+                  if (false) ...[
                     Positioned(
                         top: 16.0,
                         right: 16.0,
@@ -115,7 +105,7 @@ class FeaturedRestaurantsItem extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
-                text ?? '-',
+                restaurant.name ?? '-',
                 style: context.textTheme.bodyMedium,
               ),
             ),
@@ -132,11 +122,12 @@ class FeaturedRestaurantsItem extends StatelessWidget {
                     width: 14.0,
                   ),
                   const SizedBox(width: 4.0,),
-                  // TODO: DATA
-                  Text(
-                    'Free delivery',
-                    style: context.textTheme.bodySmall,
-                  ),
+                  if (restaurant.isFreeDelivery) ...[
+                    Text(
+                      'Free delivery',
+                      style: context.textTheme.bodySmall,
+                    ),
+                  ],
                   const SizedBox(width: 16.0,),
                   Image.asset(
                     Images.icDeliveryTime,
@@ -145,7 +136,7 @@ class FeaturedRestaurantsItem extends StatelessWidget {
                   ),
                   const SizedBox(width: 4.0,),
                   Text(
-                    deliveryEstimation ?? '-',
+                    restaurant.timeEstimation ?? '-',
                     style: context.textTheme.bodySmall,
                   ),
                 ],
@@ -157,7 +148,7 @@ class FeaturedRestaurantsItem extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: categories?.map((e) => Container(
+                children: restaurant.category?.map((e) => Container(
                   margin: const EdgeInsets.only(right: 8.0),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12.0,

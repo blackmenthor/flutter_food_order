@@ -20,10 +20,12 @@ class RestaurantModel extends ChangeNotifier {
     restaurants = data.docs.map((snapshot) => Restaurant(
         uid: snapshot.id,
         name: snapshot.data()['name'],
+        description: snapshot.data()['description'],
         rating: snapshot.data()['rating'],
         ratingCount: snapshot.data()['rating'],
         category: snapshot.data()['category'],
         isFreeDelivery: snapshot.data()['isFreeDelivery'],
+        isFavorite: snapshot.data()['favorite'],
         image: snapshot.data()['image'],
     )).toList();
     notifyListeners();
