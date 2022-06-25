@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_food_order/core/domain/%20models/restaurant.dart';
+import 'package:flutter_food_order/core/models/menu_model.dart';
 import 'package:flutter_food_order/ui/pages/restaurant_detail/restaurant_detail_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
+import 'package:provider/provider.dart';
 
 class FeaturedRestaurantsItem extends StatelessWidget {
   const FeaturedRestaurantsItem({
@@ -18,8 +20,11 @@ class FeaturedRestaurantsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.push(builder: (ctx) => RestaurantDetailPage(
-          restaurant: restaurant,
+        context.push(builder: (ctx) => ChangeNotifierProvider(
+            create: (ctx) => MenuModel(restaurantId: restaurant.uid),
+            child: RestaurantDetailPage(
+              restaurant: restaurant,
+            ),
         ));
       },
       child: Container(

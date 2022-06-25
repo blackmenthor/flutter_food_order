@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_food_order/core/models/auth_models.dart';
+import 'package:flutter_food_order/core/models/auth_model.dart';
+import 'package:flutter_food_order/core/models/booking_model.dart';
+import 'package:flutter_food_order/ui/pages/orders/my_orders_page.dart';
 import 'package:flutter_food_order/ui/pages/profile/profile_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
@@ -48,7 +50,7 @@ class NavigationDrawer extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  // TODO: ONTAP
+                  context.push(builder: (ctx) => const MyOrdersPage());
                 },
                 leading: Image.asset(
                   Images.icOrders,
@@ -91,6 +93,7 @@ class NavigationDrawer extends StatelessWidget {
                       msg: 'Are you sure you want to logout?',
                   ) ?? false;
                   if (resp) {
+                    context.read<BookingModel>().clearAll();
                     context.read<AuthModel>().logout();
                   }
                 },

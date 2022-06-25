@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_food_order/core/models/auth_models.dart';
+import 'package:flutter_food_order/core/models/auth_model.dart';
 import 'package:flutter_food_order/core/models/location_model.dart';
 import 'package:flutter_food_order/core/models/restaurant_model.dart';
 import 'package:flutter_food_order/ui/components/featured_restaurants_item.dart';

@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_food_order/ui/pages/review/review_page.dart';
+import 'package:flutter_food_order/core/domain/%20models/menu.dart';
+import 'package:flutter_food_order/core/domain/%20models/restaurant.dart';
+import 'package:flutter_food_order/core/models/auth_model.dart';
+import 'package:flutter_food_order/core/models/booking_model.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
-import 'package:flutter_food_order/ui/utils/images.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 enum CheckoutPageState {
   IDLE,
@@ -12,7 +16,12 @@ enum CheckoutPageState {
 }
 
 class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({Key? key}) : super(key: key);
+  const CheckoutPage({
+    Key? key,
+    required this.restaurant,
+  }) : super(key: key);
+
+  final Restaurant restaurant;
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -48,8 +57,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
     );
 
-  Widget _checkoutItem(BuildContext context)
-    => Row(
+  Widget _checkoutItem(BuildContext context, Menu menu) {
+    final bookingModel = context.watch<BookingModel>();
+    final menuCount = bookingModel.menuCount(
+        restaurant: widget.restaurant,
+        menu: menu,
+    );
+
+    return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -58,8 +73,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
           height: 75.0,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16.0),
-            child: Image.asset(
-              Images.pizza,
+            child: CachedNetworkImage(
+              imageUrl: menu.image!,
               width: 75.0,
               height: 75.0,
               fit: BoxFit.cover,
@@ -73,17 +88,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Red n hot pizza',
+                menu.name!,
                 style: context.textTheme.bodyMedium,
               ),
               const SizedBox(height: 4.0,),
               Text(
-                'Spicy chicken',
+                menu.description!,
                 style: context.textTheme.bodyMedium,
               ),
               const SizedBox(height: 4.0,),
               Text(
-                '\$15.30',
+                '\$${menu.price}',
                 style: context.textTheme.bodyMedium?.primary,
               ),
             ],
@@ -97,7 +112,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
           children: [
             InkWell(
               onTap: () {
-                // TODO: CLEAR CHECKOUT ITEM
+                bookingModel.clearMenuFromCart(
+                    restaurant: widget.restaurant,
+                    menu: menu,
+                );
               },
               child: Icon(
                 Icons.close,
@@ -110,41 +128,57 @@ class _CheckoutPageState extends State<CheckoutPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  height: 24.0,
-                  width: 24.0,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: context.colors.primary,
+                InkWell(
+                  onTap: () {
+                    bookingModel.decreaseMenuFromCart(
+                        restaurant: widget.restaurant,
+                        menu: menu,
+                    );
+                  },
+                  child: Container(
+                    height: 24.0,
+                    width: 24.0,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: context.colors.primary,
+                      ),
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.remove,
-                      size: 16.0,
-                      color: context.colors.primary,
+                    child: Center(
+                      child: Icon(
+                        Icons.remove,
+                        size: 16.0,
+                        color: context.colors.primary,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8.0,),
                 Text(
-                  '2',
+                  menuCount.toString(),
                   style: context.textTheme.bodyMedium?.primary,
                 ),
                 const SizedBox(width: 8.0,),
-                Container(
-                  height: 24.0,
-                  width: 24.0,
-                  decoration: BoxDecoration(
-                    color: context.colors.primary,
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.add,
-                      size: 16.0,
-                      color: Colors.white,
+                InkWell(
+                  onTap: () {
+                    bookingModel.addMenuToCart(
+                      restaurant: widget.restaurant,
+                      menu: menu,
+                    );
+                  },
+                  child: Container(
+                    height: 24.0,
+                    width: 24.0,
+                    decoration: BoxDecoration(
+                      color: context.colors.primary,
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.add,
+                        size: 16.0,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -154,6 +188,164 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
       ],
     );
+  }
+
+  List<Widget> _checkoutItems(BuildContext context) {
+    final bookingModel = context.watch<BookingModel>();
+    final cart = bookingModel.cartForRestaurant(widget.restaurant);
+    if (cart?.isEmpty ?? true) {
+      return [Text(
+        'No Items in cart!',
+        style: context.textTheme.bodyMedium,
+      )];
+    }
+
+    return cart?.keys.map((e) => _checkoutItem(context, e))?.toList() ?? [];
+  }
+
+  Widget _mainWidget(BuildContext context) {
+    final bookingModel = context.watch<BookingModel>();
+    return ListView(
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        Center(
+          child: Text(
+            'Cart',
+            style: context.textTheme.bodyLarge?.copyWith(
+              fontSize: 20.0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 24.0,),
+        ..._checkoutItems(context),
+        const SizedBox(height: 24.0,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                'Subtotal',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  fontSize: 18.0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8.0,),
+            Text(
+              '\$${bookingModel.subtotalForRestaurant(widget.restaurant)}',
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontSize: 18.0,
+              ),
+            ),
+          ],
+        ),
+        Divider(
+          thickness: 1.5,
+          color: ThemeColors.greyColor.withOpacity(0.1),
+        ),
+        const SizedBox(height: 8.0,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                'Tax and Fees',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  fontSize: 18.0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8.0,),
+            Text(
+              '\$${bookingModel.taxAndFees(widget.restaurant)}',
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontSize: 18.0,
+              ),
+            ),
+          ],
+        ),
+        Divider(
+          thickness: 1.5,
+          color: ThemeColors.greyColor.withOpacity(0.1),
+        ),
+        const SizedBox(height: 8.0,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                'Delivery',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  fontSize: 18.0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8.0,),
+            Text(
+              '\$${bookingModel.delivery}',
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontSize: 18.0,
+              ),
+            ),
+          ],
+        ),
+        Divider(
+          thickness: 1.5,
+          color: ThemeColors.greyColor.withOpacity(0.1),
+        ),
+        const SizedBox(height: 8.0,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                '(${bookingModel.totalCartForRestaurant(widget.restaurant)} items)',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  fontSize: 14.0,
+                  color: ThemeColors.greyColor,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8.0,),
+            Text(
+              '\$${bookingModel.subtotalForRestaurant(widget.restaurant)}',
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontSize: 18.0,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 48.0,),
+        Divider(
+          thickness: 1.5,
+          color: ThemeColors.greyColor.withOpacity(0.1),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                'Total',
+                style: context.textTheme.bodyMedium,
+              ),
+            ),
+            const SizedBox(width: 8.0,),
+            Text(
+              '\$${bookingModel.total(widget.restaurant).toStringAsFixed(2)}',
+              style: context.textTheme.bodyMedium?.copyWith(
+                fontSize: 18.0,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,146 +387,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         )
               : Stack(
           children: [
-            ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                Center(
-                  child: Text(
-                    'Cart',
-                    style: context.textTheme.bodyLarge?.copyWith(
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24.0,),
-                _checkoutItem(context),
-                const SizedBox(height: 24.0,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Subtotal',
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0,),
-                    Text(
-                      '\$27.30',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(
-                  thickness: 1.5,
-                  color: ThemeColors.greyColor.withOpacity(0.1),
-                ),
-                const SizedBox(height: 8.0,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Tax and Fees',
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0,),
-                    Text(
-                      '\5.30',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(
-                  thickness: 1.5,
-                  color: ThemeColors.greyColor.withOpacity(0.1),
-                ),
-                const SizedBox(height: 8.0,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Delivery',
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          fontSize: 18.0,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0,),
-                    Text(
-                      '\$1.00',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ],
-                ),
-                Divider(
-                  thickness: 1.5,
-                  color: ThemeColors.greyColor.withOpacity(0.1),
-                ),
-                const SizedBox(height: 8.0,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '(2 items)',
-                        style: context.textTheme.bodyMedium?.copyWith(
-                          fontSize: 14.0,
-                          color: ThemeColors.greyColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8.0,),
-                    Text(
-                      '\$1.00',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 48.0,),
-                Divider(
-                  thickness: 1.5,
-                  color: ThemeColors.greyColor.withOpacity(0.1),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Total',
-                        style: context.textTheme.bodyMedium,
-                      ),
-                    ),
-                    const SizedBox(width: 8.0,),
-                    Text(
-                      '\$25.00',
-                      style: context.textTheme.bodyMedium?.copyWith(
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            _mainWidget(context),
             Positioned(
               top: 8.0,
               left: 16.0,
@@ -351,15 +404,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: FloatingActionButton.extended(
           onPressed: () async {
+            final bookingModel = context.read<BookingModel>();
+            final authModel = context.read<AuthModel>();
             setState(() {
               _state = CheckoutPageState.LOADING;
             });
-            await Future.delayed(const Duration(seconds: 2), () {});
+            await bookingModel.orderFromCart(
+                restaurant: widget.restaurant,
+                user: authModel.user!,
+            );
             setState(() {
               _state = CheckoutPageState.COMPLETED;
             });
-            await Future.delayed(const Duration(seconds: 1), () {});
-            context.pushAndReplace(builder: (ctx) => const ReviewPage());
+            await Future.delayed(const Duration(seconds: 2), () {});
+            context.showMessageSnackbar(text: 'Booking success!');
+            context.popUntilRoot();
           },
           backgroundColor: context.colors.primary,
           label: Text(

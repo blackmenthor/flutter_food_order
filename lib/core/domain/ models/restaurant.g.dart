@@ -17,6 +17,8 @@ abstract class _$RestaurantCWProxy {
 
   Restaurant isFreeDelivery(bool isFreeDelivery);
 
+  Restaurant location(String? location);
+
   Restaurant name(String? name);
 
   Restaurant rating(double? rating);
@@ -39,6 +41,7 @@ abstract class _$RestaurantCWProxy {
     String? image,
     bool? isFavorite,
     bool? isFreeDelivery,
+    String? location,
     String? name,
     double? rating,
     double? ratingCount,
@@ -70,6 +73,9 @@ class _$RestaurantCWProxyImpl implements _$RestaurantCWProxy {
       this(isFreeDelivery: isFreeDelivery);
 
   @override
+  Restaurant location(String? location) => this(location: location);
+
+  @override
   Restaurant name(String? name) => this(name: name);
 
   @override
@@ -99,6 +105,7 @@ class _$RestaurantCWProxyImpl implements _$RestaurantCWProxy {
     Object? image = const $CopyWithPlaceholder(),
     Object? isFavorite = const $CopyWithPlaceholder(),
     Object? isFreeDelivery = const $CopyWithPlaceholder(),
+    Object? location = const $CopyWithPlaceholder(),
     Object? name = const $CopyWithPlaceholder(),
     Object? rating = const $CopyWithPlaceholder(),
     Object? ratingCount = const $CopyWithPlaceholder(),
@@ -128,6 +135,10 @@ class _$RestaurantCWProxyImpl implements _$RestaurantCWProxy {
           ? _value.isFreeDelivery
           // ignore: cast_nullable_to_non_nullable
           : isFreeDelivery as bool,
+      location: location == const $CopyWithPlaceholder()
+          ? _value.location
+          // ignore: cast_nullable_to_non_nullable
+          : location as String?,
       name: name == const $CopyWithPlaceholder()
           ? _value.name
           // ignore: cast_nullable_to_non_nullable

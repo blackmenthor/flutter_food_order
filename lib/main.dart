@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_food_order/app/app.dart';
 import 'package:flutter_food_order/core/dependency_injection/injector.dart';
-import 'package:flutter_food_order/core/models/auth_models.dart';
+import 'package:flutter_food_order/core/models/auth_model.dart';
+import 'package:flutter_food_order/core/models/booking_model.dart';
 import 'package:flutter_food_order/core/models/location_model.dart';
+import 'package:flutter_food_order/core/models/order_model.dart';
 import 'package:flutter_food_order/core/models/restaurant_model.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +38,8 @@ void main() async {
         ChangeNotifierProvider.value(value: AuthModel()),
         ChangeNotifierProvider.value(value: LocationModel()),
         ChangeNotifierProvider.value(value: RestaurantModel()),
+        ChangeNotifierProvider.value(value: BookingModel()),
+        ChangeNotifierProvider.value(value: OrderModel()),
       ],
       child: const AyoMaemApp(),
   ));

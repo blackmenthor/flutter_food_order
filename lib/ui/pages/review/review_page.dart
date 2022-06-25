@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_food_order/core/domain/%20models/restaurant.dart';
 import 'package:flutter_food_order/ui/pages/review_list/review_list_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
@@ -7,7 +9,10 @@ import 'package:flutter_food_order/ui/utils/images.dart';
 class ReviewPage extends StatelessWidget {
   const ReviewPage({
     Key? key,
+    required this.restaurant,
   }) : super(key: key);
+
+  final Restaurant restaurant;
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +80,8 @@ class ReviewPage extends StatelessWidget {
                           backgroundColor: context.colors.secondary,
                           radius: 48.0,
                           child: Center(
-                            child: Image.asset(
-                              Images.pizzaHut,
+                            child: CachedNetworkImage(
+                              imageUrl: restaurant.image!,
                               width: 48.0,
                               height: 48.0,
                             ),
@@ -90,7 +95,7 @@ class ReviewPage extends StatelessWidget {
             const SizedBox(height: 16.0,),
             Center(
               child: Text(
-                'Pizza Hut',
+                restaurant.name!,
                 style: context.textTheme.bodyLarge?.copyWith(
                   fontSize: 22.0,
                 ),
@@ -99,7 +104,7 @@ class ReviewPage extends StatelessWidget {
             const SizedBox(height: 16.0,),
             Center(
               child: Text(
-                'Jakarta Timur',
+                restaurant.location!,
                 style: context.textTheme.bodyLarge?.copyWith(
                   color: ThemeColors.greyColor,
                   fontSize: 18.0,

@@ -1,11 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_food_order/core/domain/%20models/restaurant.dart';
+import 'package:flutter_food_order/core/models/booking_model.dart';
+import 'package:flutter_food_order/core/models/menu_model.dart';
 import 'package:flutter_food_order/ui/components/menu_item_card.dart';
 import 'package:flutter_food_order/ui/pages/checkout/checkout_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
 import 'package:flutter_food_order/ui/utils/extensions.dart';
 import 'package:flutter_food_order/ui/utils/images.dart';
+import 'package:provider/provider.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   const RestaurantDetailPage({
@@ -134,42 +137,32 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
       ],
     );
 
-  List<Widget> _menusWidget(BuildContext context)
-    => [
-      MenuItemCard(
-          name: 'Chicken Hawaiian',
-          description: 'Chicken, Cheese, and Pineapple',
-          image: Images.pizza,
-          price: 10.35,
-          rating: 4.5,
-          ratingCount: 50,
-          isWishlisted: true,
-      ),
-      MenuItemCard(
-        name: 'Chicken Hawaiian',
-        description: 'Chicken, Cheese, and Pineapple',
-        image: Images.pizza,
-        price: 10.35,
-        rating: 4.5,
-        ratingCount: 50,
-      ),
-      MenuItemCard(
-        name: 'Chicken Hawaiian',
-        description: 'Chicken, Cheese, and Pineapple',
-        image: Images.pizza,
-        price: 10.35,
-        rating: 4.5,
-        ratingCount: 50,
-      ),
-      MenuItemCard(
-        name: 'Chicken Hawaiian',
-        description: 'Chicken, Cheese, and Pineapple',
-        image: Images.pizza,
-        price: 10.35,
-        rating: 4.5,
-        ratingCount: 50,
-      ),
-    ];
+  List<Widget> _menusWidget(BuildContext context) {
+    final menuModel = context.watch<MenuModel>();
+    if (!menuModel.hasData) {
+      return [const Center(
+        child: SizedBox(
+          height: 32.0,
+          width: 32.0,
+          child: CircularProgressIndicator(),
+        ),
+      )];
+    }
+
+    final menus = menuModel.menus;
+    if (menus?.isEmpty ?? true) {
+      return [const Center(
+        child: Text(
+          'Empty Data...',
+        ),
+      )];
+    }
+
+    return menus?.map((e) => MenuItemCard(
+        restaurant: widget.restaurant,
+        menu: e,
+      ))?.toList() ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,27 +194,41 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      // TODO: CHECK CHECKOUT
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            context.push(builder: (ctx) => const CheckoutPage());
-          },
-          icon: CircleAvatar(
-            backgroundColor: Colors.white,
-            child: Image.asset(
-              Images.icCart,
-              height: 16.0,
-              width: 16.0,
-              color: context.colors.primary,
-            ),
-          ),
-          backgroundColor: context.colors.primary,
-          label: Text(
-            'Checkout',
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: Colors.white,
-            ),
-          ),
+      floatingActionButton: Builder(
+        builder: (context) {
+          final bookingModel = context.watch<BookingModel>();
+          final cartForThisRestaurant = bookingModel
+              .cartForRestaurant(widget.restaurant);
+          final cartIsEmpty = cartForThisRestaurant?.isEmpty ?? true;
+          return FloatingActionButton.extended(
+              onPressed: cartIsEmpty ? null :() {
+                context.push(builder: (ctx) => CheckoutPage(
+                  restaurant: widget.restaurant,
+                ));
+              },
+              icon: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: cartIsEmpty ? Image.asset(
+                  Images.icCart,
+                  height: 16.0,
+                  width: 16.0,
+                  color: context.colors.primary,
+                ) : Text(
+                  bookingModel.totalCartForRestaurant(widget.restaurant)!.toString(),
+                  style: TextStyle(
+                    color: context.colors.primary,
+                  ),
+                ),
+              ),
+              backgroundColor: context.colors.primary,
+              label: Text(
+                'Checkout',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+          );
+        }
       ),
     );
   }

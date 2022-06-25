@@ -17,6 +17,27 @@ class FirestoreController {
     });
   }
 
+  Future<void> createOrder({
+    required double subtotal,
+    required double tax,
+    required double totalRestaurant,
+    required DateTime timestamp,
+    required String userId,
+    required String restaurantId,
+    required Map<String, int> orders,
+  }) async {
+    final allOrders = instance.collection('orders');
+    await allOrders.add({
+      'subtotal': subtotal,
+      'taxFees': tax,
+      'total': totalRestaurant,
+      'timestamp': timestamp,
+      'userId': userId,
+      'restaurantId': restaurantId,
+      'orders': orders
+    });
+  }
+
   Future<void> setUserProfile({
     required String uid,
     String? email,

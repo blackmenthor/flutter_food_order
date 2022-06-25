@@ -16,8 +16,8 @@ class RestaurantModel extends ChangeNotifier {
 
   Future<void> fetchRestaurants() async {
     final res = instance.collection('restaurants');
-    final data = await res.get();
-    restaurants = data.docs.map((snapshot) => Restaurant(
+    res.snapshots().listen((data) {
+      restaurants = data.docs.map((snapshot) => Restaurant(
         uid: snapshot.id,
         name: snapshot.data()['name'],
         description: snapshot.data()['description'],
@@ -28,8 +28,9 @@ class RestaurantModel extends ChangeNotifier {
         isFreeDelivery: snapshot.data()['isFreeDelivery'],
         isFavorite: snapshot.data()['favorite'],
         image: snapshot.data()['image'],
-    )).toList();
-    notifyListeners();
+      )).toList();
+      notifyListeners();
+    });
   }
 
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_food_order/core/models/auth_models.dart';
+import 'package:flutter_food_order/core/models/auth_model.dart';
 import 'package:flutter_food_order/ui/pages/home/home_page.dart';
 import 'package:flutter_food_order/ui/pages/login/login_page.dart';
 import 'package:flutter_food_order/ui/theme/colors.dart';
